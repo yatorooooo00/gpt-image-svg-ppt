@@ -89,6 +89,8 @@ Text Overlays:
 - Title:
 - Labels:
 - Speaker notes:
+- Text box style:
+- Rewritten text if needed:
 Template Use:
 - Layout:
 - Preserved template elements:
@@ -142,6 +144,7 @@ Each prompt file must include the final prompt sent to the image model plus a sh
 Model:
 Size/aspect ratio:
 Prompt:
+Image-rendered text draft:
 
 ## Source Trace
 - ...
@@ -169,8 +172,10 @@ samples/
 Rules:
 
 - Generate representative image-2 samples before full-deck generation.
+- Include visible text in image-2 samples so users can review complete slide composition.
 - Record user feedback on image samples in `samples/feedback.md`.
 - After image sample approval, convert the approved samples into reference PPT pages.
+- During reference PPT conversion, replace image-rendered sample text with transparent editable PPT text boxes.
 - Record user feedback on reference PPT editability, template fit, text boxes, charts, tables, and data handling.
 - Do not proceed to the full deck until these sample gates are approved or explicitly waived by the user.
 
@@ -184,6 +189,9 @@ Track:
 - SVG true-vector checks, including whether embedded full-page raster `<image>` elements are absent from main page content
 - PowerPoint "Convert to Shape" verification results, including whether required informational elements are editable without excessive tiny path fragmentation
 - text, chart, table, and data editability checks, including whether important text was rebuilt with PPT text boxes or reliable SVG text and whether charts/tables/data labels are editable
+- transparent text box checks, including whether added boxes have no fill/opaque background unless explicitly required
+- text fit checks, including whether font, size, line spacing, and placement coordinate with the background
+- rewritten text checks, including whether condensed or rewritten text remains faithful to source documents
 - confirmation that complex backgrounds remain visually clear and are not over-fragmented into unusable tiny paths
 - PPT assembly issues
 - unresolved user review items

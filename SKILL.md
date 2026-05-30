@@ -65,13 +65,15 @@ Read `references/artifact-contract.md` before starting a new deck or handling re
 
 5. **Generate sample image-2 slide canvases for user review**
    - Before generating the full deck, use `gpt-image-2`/`image2` to create a small set of representative complete slide PNG samples, typically 2-3 pages covering different slide types such as cover/key message, content/diagram, and data/table when applicable.
+   - Generate the sample PNGs with visible slide text included, so the user can judge the complete page effect: title placement, label density, copy length, hierarchy, and overall composition.
    - Save them under `samples/png/` with matching prompt files under `samples/prompts/`.
-   - Present the sample images to the user and ask for feedback on style, composition, document fidelity, template fit, and whether the generated page direction is acceptable.
+   - Present the sample images to the user and ask for feedback on style, composition, document fidelity, template fit, text wording, text amount, and whether the generated page direction is acceptable.
    - Apply the user's sample feedback to `style-lock.md` and `deck-plan.md`.
    - Do not generate the full deck until the user confirms the sample image direction or explicitly tells you to proceed.
 
 6. **Convert approved samples into reference PPT pages**
    - After the user confirms the sample images, semantically convert those sample PNGs into SVG/reference PPT pages using the same rules that will be used for the final deck.
+   - Use the approved text-bearing image2 sample as the visual reference, then replace image-rendered text with transparent editable PPT text boxes positioned and styled to match the sample.
    - Save the reference PPT as `samples/reference-pages.pptx`.
    - Show or summarize the reference PPT pages for user review, specifically calling out what is editable: text boxes, charts, tables, data labels, and major diagram elements.
    - Ask the user for another round of feedback before building the full deck.
@@ -80,8 +82,8 @@ Read `references/artifact-contract.md` before starting a new deck or handling re
 7. **Generate one complete PNG slide canvas per slide**
    - Generate each slide image with the configured GPT image model, using `gpt-image-2`/`image2` when available in the environment.
    - Build each prompt from: the approved `deck-plan.md` slide content + `style-lock.md` + exact constraints from the source + the user's latest requirements.
-   - Request a complete full-slide PPT page composition, including visual hierarchy, layout, imagery, diagram structures, and intended title/label areas.
-   - Avoid asking the image model to render long readable paragraphs. For important text, include its intended placement in the complete slide image and then add/edit crisp PPT overlays during assembly.
+   - Request a complete full-slide PPT page composition, including visible title, labels, concise text blocks, visual hierarchy, layout, imagery, and diagram structures. The image2 version should show the intended text layout for review and reconstruction.
+   - Keep image-rendered text concise and slide-appropriate. During SVG/PPT conversion, replace the image-rendered text with crisp transparent editable PPT text boxes, using the image2 text layout as a placement/style reference.
    - Save prompts in `prompts/slide-XX.md` and outputs in `png/slide-XX.png`.
 
 8. **Semantically convert the whole PNG slide to SVG/PPT objects**
@@ -89,6 +91,7 @@ Read `references/artifact-contract.md` before starting a new deck or handling re
    - Treat the SVG as the editable full slide page, not a background layer.
    - Keep the image-2 PNG as the visual source of truth for the conversion; do not redesign the slide from scratch unless the user asks for a design change.
    - Prefer semantic SVG/PPT reconstruction over naive pixel tracing: use GPT/vision-assisted interpretation of the PNG, source document, approved deck plan, and PPT template to rebuild editable text, charts, tables, data labels, key diagram elements, major layout regions, icons, shapes, arrows, and text areas.
+   - Treat image-rendered text as a layout and wording draft, not as the final text layer. Recreate it as transparent editable PPT text boxes unless the user explicitly accepts non-editable text.
    - Do not force every visual element to become a native PowerPoint object. Complex decorative backgrounds, textures, atmosphere, and non-critical illustrative detail may remain as grouped/vectorized background artwork or, when unavoidable, a locked raster backdrop, as long as required editable content is not trapped inside it.
    - Text, charts, tables, numeric data, legends, axes, data labels, and user-facing factual labels must be editable as PPT text boxes, PPT chart/table objects, or clean SVG/PPT shapes suitable for PowerPoint editing.
    - Keep clarity high and editability practical. Do not split every tiny color patch into thousands of vector paths. Group shapes by semantic role and preserve only the detail needed for a sharp presentation page.
@@ -102,11 +105,15 @@ Read `references/artifact-contract.md` before starting a new deck or handling re
    - Create one PPT slide per SVG, using matching template layouts when available.
    - Place each `svg/slide-XX.svg` full-bleed on its matching slide.
    - Add editable PPT text boxes for titles, labels, captions, page numbers, speaker notes, and any text that must remain crisp or user-editable. Prefer template text boxes and styles when available.
+   - Keep added text boxes visually transparent: no fill color, no opaque background, and no unnecessary border unless the user or template requires it.
+   - Fit text typography and placement to the generated background: choose font family, size, weight, line spacing, alignment, and position so the text feels integrated with the slide image and remains readable.
+   - If the original text does not fit or clashes with the background, rewrite it into concise source-faithful slide text using the user's document and requirements, then place the rewritten text in the editable text box.
+   - Do not rewrite factual meaning, numbers, names, dates, or claims unless the source document supports the rewritten wording.
    - Keep `final.pptx` plus the `svg/` and `png/` folders so later revisions can target exact pages.
 
 10. **QA before delivery**
    - Render or preview the PPTX pages.
-   - Check: approved outline fidelity, sample feedback applied, reference PPT feedback applied, document fidelity, slide order, template fit, coherent style, no off-topic imagery, no hallucinated text, no clipped content, SVGs visible in the deck, required text/data/chart/table content is editable, and complex backgrounds remain clear.
+   - Check: approved outline fidelity, sample feedback applied, reference PPT feedback applied, document fidelity, slide order, template fit, coherent style, no off-topic imagery, no hallucinated text, no clipped content, SVGs visible in the deck, required text/data/chart/table content is editable, text boxes are transparent, text typography/placement fits the background, rewritten text remains source-faithful, and complex backgrounds remain clear.
    - Record issues and fixes in `qa/notes.md`.
 
 ## Revision Rules
